@@ -1,4 +1,4 @@
-const CooperCalculator = (distance, gender, age) => {
+const cooperCalculator = (distance, gender, age) => {
   const ratings = [
     "Excellent",
     "Above average",
@@ -78,4 +78,4 @@ const CooperCalculator = (distance, gender, age) => {
   return ratings[ratingIndex];
 };
 
-export default CooperCalculator;
+export default cooperCalculator;
