@@ -11,7 +11,7 @@ class DisplayPerformanceData extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.updateIndex != prevProps.updateIndex) {
+    if (this.props.updateIndex !== prevProps.updateIndex) {
       this.getPerformanceData()
     }
   }

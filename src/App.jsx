@@ -4,6 +4,7 @@ import InputFields from "./components/InputFields";
 import LoginForm from "./components/LoginForm";
 import { authenticate } from "./modules/auth";
 import DisplayPerformanceData from "./components/DisplayPerformanceData";
+import DisplayChart from "./components/DisplayChart";
 
 class App extends Component {
   state = {
@@ -14,7 +15,8 @@ class App extends Component {
     authenticated: false,
     message: "",
     entrySaved: false,
-    renderIndex: false
+    renderIndex: false,
+    renderGraph: false
   };
 
   onChangeHandler = e => {
@@ -38,6 +40,7 @@ class App extends Component {
     const { renderLoginForm, authenticated, message } = this.state;
     let renderLogin;
     let performanceDataIndex;
+    let performanceDataGraph;
     switch (true) {
       case renderLoginForm && !authenticated:
         renderLogin = <LoginForm submitFormHandler={this.onLogin} />;
@@ -81,6 +84,28 @@ class App extends Component {
             </button>
           );
         }
+        if (this.state.renderGraph) {
+          performanceDataGraph = (
+            <>
+              <button onClick={() => this.setState({ renderGraph: false })}>
+                Hide Graph
+              </button>
+              <DisplayChart
+                updateIndex={this.state.updateIndex}
+                indexUpdated={() => this.setState({ updateIndex: false })}
+              />
+            </>
+          );
+        } else {
+          performanceDataGraph = (
+            <button
+              id="show-graph"
+              onClick={() => this.setState({ renderGraph: true })}
+            >
+              Show Graph
+            </button>
+          );
+        }
     }
     return (
       <>
@@ -97,6 +122,7 @@ class App extends Component {
           }
         />
         {performanceDataIndex}
+        {performanceDataGraph}
       </>
     );
   }
