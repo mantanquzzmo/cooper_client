@@ -6,7 +6,6 @@ const authenticate = async (email, password) => {
       email: email,
       password: password
     });
-    debugger
     await storeAuthCredentials(response);
     return { authenticated: true };
   } catch (error) {
@@ -14,14 +13,12 @@ const authenticate = async (email, password) => {
   }
 };
 
-const signup = async (email, password, password_confirmation) => {
+const signup = async (email, password) => {
   try {
     const response = await axios.post("/auth", {
       email: email,
       password: password,
-      password_confirmation
     });
-    debugger
     await storeAuthCredentials(response);
     return { authenticated: true };
   } catch (error) {
