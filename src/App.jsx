@@ -5,6 +5,8 @@ import LoginForm from "./components/LoginForm";
 import { authenticate } from "./modules/auth";
 import DisplayPerformanceData from "./components/DisplayPerformanceData";
 import DisplayChart from "./components/DisplayChart";
+import SignupForm from "./components/SignupForm";
+import { signup, signout } from "./modules/auth";
 
 class App extends Component {
   state = {
@@ -12,6 +14,7 @@ class App extends Component {
     gender: "female",
     age: "",
     renderLoginForm: false,
+    renderSignupForm: false,
     authenticated: false,
     message: "",
     entrySaved: false,
@@ -36,15 +39,56 @@ class App extends Component {
     }
   };
 
+  onSignup = async e => {
+    e.preventDefault();
+    const response = await signup(
+      e.target.email.value,
+      e.target.password.value,
+      e.target.password_confirmation.value
+    );
+    if (response.authenticated) {
+      this.setState({ authenticated: true });
+    } else {
+      this.setState({ message: response.message, renderLoginForm: false });
+    }
+  };
+
+  onLogout = async () => {
+    const response = await signout();
+    if (!response.authenticated) {
+      this.setState({ authenticated: false });
+      sessionStorage.removeItem("credentials");
+    } else {
+      this.setState({ message: response.message });
+    }
+  };
+
   render() {
-    const { renderLoginForm, authenticated, message } = this.state;
+    const {
+      renderLoginForm,
+      renderSignupForm,
+      authenticated,
+      message
+    } = this.state;
     let renderLogin;
+    let renderSignup;
+    let renderLogout;
     let performanceDataIndex;
     let performanceDataGraph;
     switch (true) {
       case renderLoginForm && !authenticated:
         renderLogin = <LoginForm submitFormHandler={this.onLogin} />;
         break;
+
+      case renderSignupForm && !authenticated:
+        renderSignup = (
+          <>
+            <p>Please fill in your information</p>
+            <SignupForm submitFormHandler={this.onSignup} />
+          </>
+        );
+        break;
+
       case !renderLoginForm && !authenticated:
         renderLogin = (
           <>
@@ -57,8 +101,31 @@ class App extends Component {
             <p>{message}</p>
           </>
         );
+        renderSignup = (
+          <>
+            <button
+              id="signup"
+              onClick={() => this.setState({ renderSignupForm: true })}
+            >
+              Signup
+            </button>
+            <p>{message}</p>
+          </>
+        );
         break;
+
       case authenticated:
+        renderLogout = (
+          <>
+            <button
+              onClick={() => {
+                this.onLogout();
+              }}
+            >
+              Sign out
+            </button>
+          </>
+        );
         renderLogin = (
           <p>Hi {JSON.parse(sessionStorage.getItem("credentials")).uid}</p>
         );
@@ -111,6 +178,8 @@ class App extends Component {
       <>
         <InputFields onChangeHandler={this.onChangeHandler} />
         {renderLogin}
+        {renderSignup}
+        {renderLogout}
         <DisplayCooperResult
           distance={this.state.distance}
           gender={this.state.gender}
