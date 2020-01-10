@@ -6,10 +6,44 @@ const authenticate = async (email, password) => {
       email: email,
       password: password
     });
+    debugger
     await storeAuthCredentials(response);
     return { authenticated: true };
   } catch (error) {
     return { authenticated: false, message: error.response.data.errors[0] };
+  }
+};
+
+const signup = async (email, password, password_confirmation) => {
+  try {
+    const response = await axios.post("/auth", {
+      email: email,
+      password: password,
+      password_confirmation
+    });
+    debugger
+    await storeAuthCredentials(response);
+    return { authenticated: true };
+  } catch (error) {
+    return { authenticated: false, message: error.response.data.errors[0] };
+  }
+};
+
+const signout = async () => {
+  let headers = sessionStorage.getItem("credentials");
+  headers = JSON.parse(headers);
+  headers = {
+    ...headers,
+    "Content-type": "application/json",
+    Accept: "application/json"
+  };
+  let response = await axios.delete("/auth/sign_out", {
+    headers: headers
+  });
+  if (response.data.success) {
+    return { authenticated: false };
+  } else {
+    return { message: response.data.errors[0] };
   }
 };
 
@@ -24,4 +58,4 @@ const storeAuthCredentials = ({ headers }) => {
   sessionStorage.setItem("credentials", JSON.stringify(credentials));
 };
 
-export { authenticate };
+export { authenticate, signup, signout };
