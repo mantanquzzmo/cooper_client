@@ -5,9 +5,44 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  background-image: url(https://www.itl.cat/pngfile/big/213-2136793_running-wallpaper-desktop-background-for-desktop-wallpaper-desktop.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+h1 {
+  text-align: center;
+}
+
+.entries {
+  margin-top: 2%;
+  margin-left: 39%;
+  margin-bottom: 1%;
+  border-radius: 25px;
+  background: rgb(177, 180, 173);
+  padding: 20px;
+  width: 300px;
+  height: 200px;
+}
+
+.run {
+  margin-top: 2%;
+  margin-left: 1%;
+  display:inline-block;
+  border-radius: 25px;
+  background: rgb(217, 198, 253);
+  padding: 20px;
+  width: 300px;
+  height: 200px;
+}
+
+.welcome {
+  display:inline-block;
 }

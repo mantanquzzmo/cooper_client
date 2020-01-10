@@ -5,7 +5,6 @@ import LoginForm from "./components/LoginForm";
 import { authenticate } from "./modules/auth";
 import DisplayPerformanceData from "./components/DisplayPerformanceData";
 import DisplayChart from "./components/DisplayChart";
-import SignupForm from "./components/SignupForm";
 import { signup, signout } from "./modules/auth";
 
 class App extends Component {
@@ -13,8 +12,7 @@ class App extends Component {
     distance: "",
     gender: "female",
     age: "",
-    renderLoginForm: false,
-    renderSignupForm: false,
+    renderLoginForm: true,
     authenticated: false,
     message: "",
     entrySaved: false,
@@ -43,8 +41,7 @@ class App extends Component {
     e.preventDefault();
     const response = await signup(
       e.target.email.value,
-      e.target.password.value,
-      e.target.password_confirmation.value
+      e.target.password.value
     );
     if (response.authenticated) {
       this.setState({ authenticated: true });
@@ -56,7 +53,7 @@ class App extends Component {
   onLogout = async () => {
     const response = await signout();
     if (!response.authenticated) {
-      this.setState({ authenticated: false });
+      this.setState({ authenticated: false, age: "", distance: "" });
       sessionStorage.removeItem("credentials");
     } else {
       this.setState({ message: response.message });
@@ -64,28 +61,19 @@ class App extends Component {
   };
 
   render() {
-    const {
-      renderLoginForm,
-      renderSignupForm,
-      authenticated,
-      message
-    } = this.state;
+    const { renderLoginForm, authenticated, message } = this.state;
     let renderLogin;
-    let renderSignup;
     let renderLogout;
+    let renderFields;
     let performanceDataIndex;
     let performanceDataGraph;
     switch (true) {
       case renderLoginForm && !authenticated:
-        renderLogin = <LoginForm submitFormHandler={this.onLogin} />;
-        break;
-
-      case renderSignupForm && !authenticated:
-        renderSignup = (
-          <>
-            <p>Please fill in your information</p>
-            <SignupForm submitFormHandler={this.onSignup} />
-          </>
+        renderLogin = (
+          <LoginForm
+            submitFormHandler={this.onLogin}
+            submitSignupHandler={this.onSignup}
+          />
         );
         break;
 
@@ -101,20 +89,14 @@ class App extends Component {
             <p>{message}</p>
           </>
         );
-        renderSignup = (
-          <>
-            <button
-              id="signup"
-              onClick={() => this.setState({ renderSignupForm: true })}
-            >
-              Signup
-            </button>
-            <p>{message}</p>
-          </>
-        );
         break;
 
       case authenticated:
+        renderFields = (
+          <>
+            <InputFields onChangeHandler={this.onChangeHandler} />
+          </>
+        );
         renderLogout = (
           <>
             <button
@@ -127,34 +109,55 @@ class App extends Component {
           </>
         );
         renderLogin = (
-          <p>Hi {JSON.parse(sessionStorage.getItem("credentials")).uid}</p>
+          <>
+            <div class="welcome">
+              <h1>
+                Welcome {JSON.parse(sessionStorage.getItem("credentials")).uid}
+              </h1>
+              <button
+                class="logout-btn"
+                onClick={() => {
+                  this.onLogout();
+                }}
+              >
+                Sign out
+              </button>
+            </div>
+          </>
         );
         if (this.state.renderIndex) {
           performanceDataIndex = (
             <>
+              <button
+                class="ui teal basic button"
+                onClick={() => this.setState({ renderIndex: false })}
+              >
+                Hide Results
+              </button>
               <DisplayPerformanceData
                 updateIndex={this.state.updateIndex}
                 indexUpdated={() => this.setState({ updateIndex: false })}
               />
-              <button onClick={() => this.setState({ renderIndex: false })}>
-                Hide past entries
-              </button>
             </>
           );
         } else {
           performanceDataIndex = (
             <button
               id="show-index"
+              class="ui teal button"
               onClick={() => this.setState({ renderIndex: true })}
             >
-              Show past entries
+              Show Results
             </button>
           );
         }
         if (this.state.renderGraph) {
           performanceDataGraph = (
             <>
-              <button onClick={() => this.setState({ renderGraph: false })}>
+              <button
+                class="ui purple basic button"
+                onClick={() => this.setState({ renderGraph: false })}
+              >
                 Hide Graph
               </button>
               <DisplayChart
@@ -167,6 +170,7 @@ class App extends Component {
           performanceDataGraph = (
             <button
               id="show-graph"
+              class="ui purple button"
               onClick={() => this.setState({ renderGraph: true })}
             >
               Show Graph
@@ -176,10 +180,8 @@ class App extends Component {
     }
     return (
       <>
-        <InputFields onChangeHandler={this.onChangeHandler} />
         {renderLogin}
-        {renderSignup}
-        {renderLogout}
+        {renderFields}
         <DisplayCooperResult
           distance={this.state.distance}
           gender={this.state.gender}

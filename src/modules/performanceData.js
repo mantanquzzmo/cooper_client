@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const saveData = async (result, entryHandler) => {
+const saveData = async (result, gender, age, distance, entryHandler) => {
   let headers = sessionStorage.getItem("credentials");
   headers = JSON.parse(headers);
   headers = {
@@ -9,10 +9,12 @@ const saveData = async (result, entryHandler) => {
     Accept: "application/json"
   };
   try {
-    await axios.post("/performance_data", 
-      { 
-        performance_data: { data: { message: result } } 
-      }, {
+    await axios.post(
+      "/performance_data",
+      {
+        performance_data: { data: { message: result, gender: gender, age: age, distance: distance } }
+      },
+      {
         headers: headers
       }
     );
@@ -39,4 +41,4 @@ const getData = async () => {
   return response;
 };
 
-export { getData, saveData }
+export { getData, saveData };
